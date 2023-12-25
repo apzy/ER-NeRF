@@ -17,10 +17,11 @@ def extract_audio(path, out_path, sample_rate=16000):
 def extract_audio_features(path, mode='wav2vec'):
 
     print(f'[INFO] ===== extract audio labels for {path} =====')
-    if mode == 'wav2vec':
-        cmd = f'python nerf/asr.py --wav {path} --save_feats'
-    else: # deepspeech
-        cmd = f'python data_utils/deepspeech_features/extract_ds_features.py --input {path}'
+    #if mode == 'wav2vec':
+    #    cmd = f'python nerf/asr.py --wav {path} --save_feats'
+    #else: # deepspeech
+    #    cmd = f'python data_utils/deepspeech_features/extract_ds_features.py --input {path}'
+    cmd = f'python data_utils/hubert.py --wav {path}'
     os.system(cmd)
     print(f'[INFO] ===== extracted audio labels =====')
 
