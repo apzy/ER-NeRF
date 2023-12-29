@@ -1015,6 +1015,9 @@ class Trainer(object):
         all_preds = []
         all_preds_depth = []
 
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        video_out = cv2.VideoWriter(os.path.join(save_path, f'{name}.avi'),fourcc,25,(512,512))
+
         with torch.no_grad():
 
             for i, data in enumerate(loader):
@@ -1036,6 +1039,8 @@ class Trainer(object):
                 pred_depth = preds_depth[0].detach().cpu().numpy()
                 pred_depth = (pred_depth * 255).astype(np.uint8)
 
+                pred = cv2.cvtColor(pred,cv2.COLOR_RGB2BGR)
+                video_out.write(pred)
                 if write_image:
                     imageio.imwrite(path, pred)
                     imageio.imwrite(path_depth, pred_depth)
@@ -1046,10 +1051,11 @@ class Trainer(object):
                 pbar.update(loader.batch_size)
 
         # write video
+        video_out.release()
         all_preds = np.stack(all_preds, axis=0)
         all_preds_depth = np.stack(all_preds_depth, axis=0)
-        imageio.mimwrite(os.path.join(save_path, f'{name}.mp4'), all_preds, fps=25, quality=8, macro_block_size=1)
-        imageio.mimwrite(os.path.join(save_path, f'{name}_depth.mp4'), all_preds_depth, fps=25, quality=8, macro_block_size=1)
+        #imageio.mimwrite(os.path.join(save_path, f'{name}.mp4'), all_preds, fps=25, quality=8, macro_block_size=1)
+        #imageio.mimwrite(os.path.join(save_path, f'{name}_depth.mp4'), all_preds_depth, fps=25, quality=8, macro_block_size=1)
 
         self.log(f"==> Finished Test.")
     
