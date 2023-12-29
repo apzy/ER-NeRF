@@ -1,12 +1,12 @@
-from transformers import Wav2Vec2Processor, HubertModel
+from transformers import Wav2Vec2FeatureExtractor, HubertModel
 import soundfile as sf
 import numpy as np
 import torch
 
 print("Loading the Wav2Vec2 Processor...")
-wav2vec2_processor = Wav2Vec2Processor.from_pretrained("facebook/hubert-large-ls960-ft")
+feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained("TencentGameMate/chinese-hubert-large")
 print("Loading the HuBERT Model...")
-hubert_model = HubertModel.from_pretrained("facebook/hubert-large-ls960-ft")
+hubert_model = HubertModel.from_pretrained("TencentGameMate/chinese-hubert-large")
 
 
 def get_hubert_from_16k_wav(wav_16k_name):
@@ -20,7 +20,7 @@ def get_hubert_from_16k_speech(speech, device="cuda:0"):
     hubert_model = hubert_model.to(device)
     if speech.ndim ==2:
         speech = speech[:, 0] # [T, 2] ==> [T,]
-    input_values_all = wav2vec2_processor(speech, return_tensors="pt", sampling_rate=16000).input_values # [1, T]
+    input_values_all = feature_extractor(speech, return_tensors="pt", sampling_rate=16000).input_values # [1, T]
     input_values_all = input_values_all.to(device)
     # For long audio sequence, due to the memory limitation, we cannot process them in one run
     # HuBERT process the wav with a CNN of stride [5,2,2,2,2,2], making a stride of 320
